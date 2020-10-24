@@ -1,0 +1,124 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558 
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "pre-launch",
+            "dependsOn": [
+              "copy openocd config",
+              "copy program"
+            ]
+          },
+          {
+            "label": "post-debug",
+            "dependsOn": [
+              "remove program",
+              "remove openocd config"
+            ]
+          },
+          {
+            "label": "copy openocd config",
+            "type": "shell",
+            "command": "scp oo.cfg hc1:/tmp",
+            "presentation": {
+              "echo": true,
+              "reveal": "never",
+              "focus": false,
+              "panel": "shared"
+            }
+          },
+          {
+            "label": "copy program",
+            "type": "shell",
+            "command": "scp target/thumbv7em-none-eabi/debug/nrf52-rust hc1:/tmp/nrf52-rust",
+            "presentation": {
+              "echo": true,
+              "reveal": "never",
+              "focus": false,
+              "panel": "shared"
+            },
+            "dependsOn": [
+              "cargo build"
+            ]
+          },
+          {
+            "label": "remove openocd config",
+            "type": "shell",
+            "command": "ssh hc1 'rm /tmp/oo.cfg'",
+            "presentation": {
+              "echo": true,
+              "reveal": "never",
+              "focus": false,
+              "panel": "shared"
+            }
+          },
+          {
+            "label": "remove program",
+            "type": "shell",
+            "command": "ssh hc1 'rm /tmp/nrf52-rust'",
+            "presentation": {
+              "echo": true,
+              "reveal": "never",
+              "focus": false,
+              "panel": "shared"
+            }
+          },
+              {
+            /*
+             * This is the default cargo build task,
+             * but we need to provide a label for it,
+             * so we can invoke it from the debug launcher.
+             */
+            "label": "cargo build",
+            "type": "shell",
+            "command": "cargo",
+            "args": ["build"],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "cargo build --release",
+            "type": "process",
+            "command": "cargo",
+            "args": ["build", "--release"],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "cargo build --examples",
+            "type": "process",
+            "command": "cargo",
+            "args": ["build","--examples"],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "cargo build --examples --release",
+            "type": "process",
+            "command": "cargo",
+            "args": ["build","--examples", "--release"],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "cargo clean",
+            "type": "process",
+            "command": "cargo",
+            "args": ["clean"],
+            "problemMatcher": [],
+            "group": "build"
+        },
+    ]
+}

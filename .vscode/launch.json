@@ -1,0 +1,25 @@
+{
+    /* 
+     * Requires the Rust Language Server (RLS) and Cortex-Debug extensions
+     * https://marketplace.visualstudio.com/items?itemName=rust-lang.rust
+     * https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug
+     */
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug",
+            "type": "gdb",
+            "request": "launch",
+            "gdbpath": "gdb",
+            "target": "target/thumbv7em-none-eabi/debug/nrf52-rust",
+            "cwd": "${workspaceRoot}",
+            "autorun": [
+              "target remote | ssh hc1 \"sudo openocd -f /tmp/oo.cfg\"",
+              "monitor reset halt",
+              "load"
+            ],
+            "preLaunchTask": "pre-launch",
+            "postDebugTask": "post-debug"
+        }
+    ]
+}
