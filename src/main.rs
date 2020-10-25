@@ -14,6 +14,8 @@ use nrf52810_hal::gpio::Level;
 use nrf52810_hal::prelude::OutputPin;
 use nrf52810_hal::prelude::_embedded_hal_blocking_delay_DelayMs;
 use core::fmt::Write;
+use lsm303agr::{AccelOutputDataRate, Lsm303agr};
+use core::format_args;
 
 #[entry]
 fn main() -> ! {
@@ -30,13 +32,27 @@ fn main() -> ! {
         rts: None
     };
     let mut uart = hal::uarte::Uarte::new(p.UARTE0, pins, hal::uarte::Parity::EXCLUDED, hal::uarte::Baudrate::BAUD115200);
+    let i2c_pins = hal::twim::Pins {
+        sda: port0.p0_26.into_floating_input().degrade(),
+        scl: port0.p0_27.into_floating_input().degrade()
+    };
+    let i2c = hal::twim::Twim::new(p.TWIM0, i2c_pins, hal::twim::Frequency::K400);
+    let mut sensor = Lsm303agr::new_with_i2c(i2c);
+    sensor.init().unwrap();
+    sensor.set_accel_odr(AccelOutputDataRate::Hz10).unwrap();
 
     loop {
         // your code goes here
         led.set_high().unwrap();
-        delay.delay_ms(1000u32);
+        delay.delay_ms(500u32);
         led.set_low().unwrap();
-        delay.delay_ms(1000u32);
+        delay.delay_ms(500u32);
+
+        if sensor.accel_status().unwrap().xyz_new_data {
+            let data = sensor.accel_data().unwrap();
+            uart.write_fmt(format_args!("Acceleration: x {} y {} z {}\n", data.x, data.y, data.z)).unwrap();
+        }
+        
         uart.write_str(&"test\n").unwrap();
     }
 }
