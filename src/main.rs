@@ -41,6 +41,9 @@ fn main() -> ! {
     sensor.init().unwrap();
     sensor.set_accel_odr(AccelOutputDataRate::Hz10).unwrap();
 
+    // temp
+    let mut temp = hal::temp::Temp::new(p.TEMP);
+
     loop {
         // your code goes here
         led.set_high().unwrap();
@@ -53,6 +56,7 @@ fn main() -> ! {
             uart.write_fmt(format_args!("Acceleration: x {} y {} z {}\n", data.x, data.y, data.z)).unwrap();
         }
         
+        uart.write_fmt(format_args!("temp: {}\n", temp.measure())).unwrap();
         uart.write_str(&"test\n").unwrap();
     }
 }
