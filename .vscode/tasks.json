@@ -6,65 +6,10 @@
         {
             "label": "pre-launch",
             "dependsOn": [
-              "copy openocd config",
-              "copy program"
-            ]
-          },
-          {
-            "label": "post-debug",
-            "dependsOn": [
-              "remove program",
-              "remove openocd config"
-            ]
-          },
-          {
-            "label": "copy openocd config",
-            "type": "shell",
-            "command": "scp oo.cfg hc1:/tmp",
-            "presentation": {
-              "echo": true,
-              "reveal": "never",
-              "focus": false,
-              "panel": "shared"
-            }
-          },
-          {
-            "label": "copy program",
-            "type": "shell",
-            "command": "scp target/thumbv7em-none-eabi/debug/nrf52-rust hc1:/tmp/nrf52-rust",
-            "presentation": {
-              "echo": true,
-              "reveal": "never",
-              "focus": false,
-              "panel": "shared"
-            },
-            "dependsOn": [
               "cargo build"
             ]
           },
           {
-            "label": "remove openocd config",
-            "type": "shell",
-            "command": "ssh hc1 'rm /tmp/oo.cfg'",
-            "presentation": {
-              "echo": true,
-              "reveal": "never",
-              "focus": false,
-              "panel": "shared"
-            }
-          },
-          {
-            "label": "remove program",
-            "type": "shell",
-            "command": "ssh hc1 'rm /tmp/nrf52-rust'",
-            "presentation": {
-              "echo": true,
-              "reveal": "never",
-              "focus": false,
-              "panel": "shared"
-            }
-          },
-              {
             /*
              * This is the default cargo build task,
              * but we need to provide a label for it,

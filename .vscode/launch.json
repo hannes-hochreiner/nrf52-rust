@@ -14,12 +14,11 @@
             "target": "target/thumbv7em-none-eabi/debug/nrf52-rust",
             "cwd": "${workspaceRoot}",
             "autorun": [
-              "target remote | ssh hc1 \"sudo openocd -f /tmp/oo.cfg\"",
+              "target remote | ssh hc1 \"sudo openocd -c 'gdb_port pipe; log_output /dev/null; source [find interface/raspberrypi-native.cfg]; transport select swd; source [find target/nrf52.cfg]; bcm2835gpio_swd_nums 25 24; bcm2835gpio_trst_num 7; bcm2835gpio_srst_num 18; init'\"",
               "monitor reset halt",
               "load"
             ],
-            "preLaunchTask": "pre-launch",
-            "postDebugTask": "post-debug"
+            "preLaunchTask": "pre-launch"
         }
     ]
 }
